@@ -13,11 +13,12 @@ class ConsultaListCreate(generics.ListCreateAPIView):
     queryset = Consulta.objects.all()
     serializer_class = ConsultaSerializer
     filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
-    ordering_fields = ['agenda__dia', 'horario']
-    ordering = ['agenda__dia', 'horario']
+    ordering_fields = ['dia', 'horario']
+    ordering = ['dia', 'horario']
 
     def get_queryset(self):
-        return self.queryset.filter(agenda__dia__gte=datetime.now().date())
+        return self.queryset.filter(
+            dia__gte=datetime.now().date(), horario__gte=datetime.now().time())
 
 
 class ConsultaDestroy(generics.DestroyAPIView):
@@ -32,9 +33,10 @@ class AgendaList(generics.ListAPIView):
     filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
     ordering_fields = ['dia']
     ordering = ['dia']
-
+    
     def get_queryset(self):
-        return self.queryset.filter(
-            Q(dia__gte=datetime.now().date()) &
-            Q(horarios__isnull=False)
-        ).distinct()
+        return self.queryset.filter(dia__gte=datetime.now().date())
+    
+    def get(self, request, *args, **kwargs):
+        Agenda.atualizar_agendas()
+        return super().get(request, *args, **kwargs)
