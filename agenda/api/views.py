@@ -38,5 +38,6 @@ class AgendaList(generics.ListAPIView):
         return self.queryset.filter(dia__gte=datetime.now().date())
     
     def get(self, request, *args, **kwargs):
+        Agenda.atualizar_horarios()
         Agenda.atualizar_agendas()
         return super().get(request, *args, **kwargs)

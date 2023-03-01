@@ -77,14 +77,12 @@ class Agenda(models.Model):
         horario, created = Horario.objects.get_or_create(horario=horario_disponivel)
         agenda, created = Agenda.objects.get_or_create(medico=medico, dia=dia)
         agenda.horarios.add(horario)
-        Agenda.atualizar_horarios()
     
     @classmethod
     def remover_horario(cls, horario, medico, dia):
         horario, created = Horario.objects.get_or_create(horario=horario)
         agenda, created = Agenda.objects.get_or_create(medico=medico, dia=dia)
         agenda.horarios.remove(horario)
-        Agenda.atualizar_horarios()
     
     @classmethod
     def atualizar_agendas(cls):
@@ -110,11 +108,6 @@ class Consulta(models.Model):
         verbose_name = "Consulta"
         verbose_name_plural = "Consultas"
         unique_together = [['medico', 'dia', 'horario']]
-
-
-@receiver(post_save, sender=Agenda)
-def agenda_post_save(sender, **kwargs):
-    Agenda.atualizar_horarios()
 
 
 @receiver(post_save, sender=Consulta)
