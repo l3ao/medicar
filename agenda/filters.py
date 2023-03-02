@@ -1,7 +1,7 @@
 from django_filters import rest_framework as filters
 
 
-from ..models import Agenda
+from .models import Agenda
 
 
 class AgendaFilter(filters.FilterSet):
@@ -12,11 +12,17 @@ class AgendaFilter(filters.FilterSet):
     
     def filter_crm(self, queryset, name, value):
         value_filter = dict(self.data).get('crm')
-        return queryset.filter(medico__crm__in=value_filter) if value_filter else queryset
+        if value_filter:
+            return queryset.filter(medico__crm__in=value_filter)
+        else:
+            return queryset
 
     def filter_medico(self, queryset, name, value):
         value_filter = dict(self.data).get('medico')
-        return queryset.filter(medico_id__in=value_filter) if value_filter else queryset
+        if value_filter:
+            return queryset.filter(medico_id__in=value_filter)
+        else:
+            return queryset
 
     class Meta:
         model = Agenda

@@ -47,8 +47,9 @@ class Agenda(models.Model):
         Medico, verbose_name=_('Médico'), blank=False,
         null=False, on_delete=models.PROTECT)
 
-    dia = models.DateField(_('Data alocação'),
-                           blank=False, null=False)
+    dia = models.DateField(
+        _('Data alocação'),
+        blank=False, null=False)
 
     horarios = models.ManyToManyField(Horario, blank=False)
 
@@ -74,21 +75,27 @@ class Agenda(models.Model):
 
     @classmethod
     def realocar_horario(cls, horario_disponivel, medico, dia):
-        horario, created = Horario.objects.get_or_create(horario=horario_disponivel)
-        agenda, created = Agenda.objects.get_or_create(medico=medico, dia=dia)
+        horario, created = Horario.objects.get_or_create(
+            horario=horario_disponivel)
+        agenda, created = Agenda.objects.get_or_create(
+            medico=medico, dia=dia)
         agenda.horarios.add(horario)
     
     @classmethod
     def remover_horario(cls, horario, medico, dia):
-        horario, created = Horario.objects.get_or_create(horario=horario)
-        agenda, created = Agenda.objects.get_or_create(medico=medico, dia=dia)
+        horario, created = Horario.objects.get_or_create(
+            horario=horario)
+        agenda, created = Agenda.objects.get_or_create(
+            medico=medico, dia=dia)
         agenda.horarios.remove(horario)
     
     @classmethod
     def atualizar_agendas(cls):
-        agendas_passadas = Agenda.objects.filter(dia__lt=datetime.now().date())
+        agendas_passadas = Agenda.objects.filter(
+            dia__lt=datetime.now().date())
         agendas_passadas.delete()
-        agendas_sem_horarios = Agenda.objects.filter(dia__gte=datetime.now().date()).distinct()
+        agendas_sem_horarios = Agenda.objects.filter(
+            dia__gte=datetime.now().date()).distinct()
         for agenda in agendas_sem_horarios:
             if not agenda.horarios.exists():
                 agenda.delete()
@@ -98,11 +105,15 @@ class Consulta(models.Model):
     medico = models.ForeignKey(
         Medico, verbose_name=_('Médico'), blank=False,
         null=False, on_delete=models.PROTECT)
-    dia = models.DateField(_('Data alocação'),
-                           blank=False, null=False)
-    horario = models.TimeField(verbose_name='Horário', null=False, blank=False)
-    data_agendamento = models.DateTimeField(verbose_name='Data do agendamento',
-                                            null=False, blank=False, auto_now_add=True)
+    dia = models.DateField(
+        _('Data alocação'),
+        blank=False, null=False)
+    horario = models.TimeField(
+        verbose_name=_('Horário'),
+        null=False, blank=False)
+    data_agendamento = models.DateTimeField(
+        verbose_name=_('Data do agendamento'),
+        null=False, blank=False, auto_now_add=True)
 
     class Meta:
         verbose_name = "Consulta"
@@ -113,19 +124,22 @@ class Consulta(models.Model):
 @receiver(post_save, sender=Consulta)
 def consulta_post_save(sender, **kwargs):
     instance = kwargs.get('instance')
-    Agenda.remover_horario(instance.horario, instance.medico, instance.dia)
+    Agenda.remover_horario(instance.horario,
+        instance.medico, instance.dia)
 
 
 @receiver(post_delete, sender=Consulta)
 def consulta_post_delete(sender, **kwargs):
     instance = kwargs.get('instance')
-    Agenda.realocar_horario(instance.horario, instance.medico, instance.dia)
+    Agenda.realocar_horario(instance.horario,
+        instance.medico, instance.dia)
 
 
 @receiver(pre_delete, sender=Consulta)
 def consulta_pre_delete(sender, **kwargs):
     instance = kwargs.get('instance')
-    agenda, created = Agenda.objects.get_or_create(medico=instance.medico, dia=instance.dia)
+    agenda, created = Agenda.objects.get_or_create(
+        medico=instance.medico, dia=instance.dia)
     if agenda.dia < datetime.now().date():
         raise exceptions.ParseError(
             "Não é possível desmarcar uma consulta que já aconteceu.")

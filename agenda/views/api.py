@@ -5,8 +5,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
 
 from ..models import Consulta, Agenda, Horario
-from .serializers import ConsultaSerializer, AgendaSerializer
-from .filters import AgendaFilter
+from ..serializers import ConsultaSerializer, AgendaSerializer
+from ..filters import AgendaFilter
 
 
 class ConsultaListCreate(generics.ListCreateAPIView):
@@ -18,7 +18,8 @@ class ConsultaListCreate(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(
-            dia__gte=datetime.now().date(), horario__gte=datetime.now().time())
+            dia__gte=datetime.now().date(),
+            horario__gte=datetime.now().time())
 
 
 class ConsultaDestroy(generics.DestroyAPIView):
@@ -39,5 +40,5 @@ class AgendaList(generics.ListAPIView):
     
     def get(self, request, *args, **kwargs):
         Agenda.atualizar_horarios()
-        Agenda.atualizar_agendas()
+        Agenda.atualizar_agendas() 
         return super().get(request, *args, **kwargs)

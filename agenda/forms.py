@@ -11,7 +11,7 @@ class AgendaForm(forms.ModelForm):
         dia = self.cleaned_data["dia"]
         if dia < datetime.now().date():
             raise forms.ValidationError(
-                'Não é possível criar uma agenda para um médico em um dia passado.')
+                "Não é possível criar uma agenda para um médico em um dia passado.")
         return self.cleaned_data["dia"]
     
     class Meta:

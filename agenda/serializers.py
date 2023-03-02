@@ -1,8 +1,7 @@
 from datetime import datetime
-import time
 
 from rest_framework import serializers
-from ..models import Consulta, Agenda, Horario, Medico
+from .models import Consulta, Agenda, Medico
 
 
 class MedicoSerializer(serializers.ModelSerializer):
@@ -31,11 +30,15 @@ class AgendaSerializer(serializers.ModelSerializer):
 
 
 class ConsultaSerializer(serializers.ModelSerializer):
-    agenda_id = serializers.IntegerField(required=False)
+    agenda_id = serializers.IntegerField(
+        required=False)
     horario = serializers.CharField()
-    dia = serializers.DateField(read_only=True)
-    medico = MedicoSerializer(read_only=True)
-    data_agendamento = serializers.DateTimeField(read_only=True)
+    dia = serializers.DateField(
+        read_only=True)
+    medico = MedicoSerializer(
+        read_only=True)
+    data_agendamento = serializers.DateTimeField(
+        read_only=True)
     
     class Meta:
         model = Consulta
@@ -75,11 +78,12 @@ class ConsultaSerializer(serializers.ModelSerializer):
 
         agenda = qs_agenda.first()
         if agenda.dia == datetime.now().date():
-            if not datetime.strptime(value, '%H:%M').time() >= datetime.now().time():
+            value_time = datetime.strptime(value, '%H:%M').time()
+            if not value_time >= datetime.now().time():
                 raise serializers.ValidationError(
                     "Não é possível marcar uma consulta para um horário passado.")
         
-        if not agenda.horarios.filter(horario=self.initial_data['horario']).exists():
+        if not agenda.horarios.filter(horario=value).exists():
             raise serializers.ValidationError(
                 "Esse horário não está disponível.")
         
