@@ -7,12 +7,16 @@ Se faz necessário rodar o comando createsuperuser, para a criação de um usuá
 Para realizar o uso da API, basta acessar as seguintes rotas:
 
 GET /agendas/ -> Para a listagem de agendas
+
 GET /consultas/ -> Para a listagem de consultas
+
 POST /consultas/ -> Para a marcação de consultas
+
 *Parametros do POST de consultas
 {
   "agenda_id": 1,
   "horario": "14:15"
 }*
+
 DELETE /consultas/<consulta_id> -> Para desmarcar consultas
 
