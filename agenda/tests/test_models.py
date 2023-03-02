@@ -45,7 +45,7 @@ class AgendaTestCase(TestCase):
             dia=datetime.now().date()
         )
 
-    def test_retornar_nova_agenda_horarios(self):
+    def test_retorno_nova_agenda_horarios(self):
         agenda = Agenda.objects.get(dia=datetime.now().date())
         self.assertEqual(agenda.dia, datetime.now().date())
         
